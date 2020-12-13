@@ -1,26 +1,25 @@
 package utils
 
+type Solution interface {
+	String() string
+}
+
 type Exercise interface {
-	ReadInput() error
-	Solution1(solution chan string)
-	Solution2(solution chan string)
+	Prepare() error
+	Solution1() (Solution, error)
+	Solution2() (Solution, error)
 }
 
-type SingleSolution struct {
-	Solution string
-	Err error
+type stringSolution struct {
+	solution string
 }
 
-type Solution struct {
-	Solution1 string
-	Solution2 string
-	Err error
+func (s stringSolution) String() string {
+	return s.solution
 }
 
-func Err(err error) Solution {
-	return Solution { "", "", err }
-}
-
-func Success(solution1 string, solution2 string) Solution {
-	return Solution { solution1, solution2, nil}
+func New(solution string) Solution {
+	return stringSolution {
+		solution,
+	}
 }

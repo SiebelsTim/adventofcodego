@@ -1,7 +1,7 @@
 package exercise2
 
 import (
-	"exercise1/utils"
+	. "exercise1/utils"
 	"strconv"
 	"strings"
 )
@@ -52,8 +52,8 @@ func (p Password) isValid2() bool {
 	return boolToInt(password[firstPosition-1] == p.Policy.letter) + boolToInt(password[lastPosition-1] == p.Policy.letter) == 1
 }
 
-func (e *Exercise2) ReadInput() error {
-	lines := utils.ReadInput(2)
+func (e *Exercise2) Prepare() error {
+	lines := ReadInput(2)
 
 	var ret []Password
 
@@ -79,7 +79,7 @@ func (e *Exercise2) ReadInput() error {
 	return nil
 }
 
-func (e *Exercise2) Solution1(ch chan string) {
+func (e *Exercise2) Solution1() (Solution, error) {
 	validCount := 0
 
 	for _, password := range e.input {
@@ -88,11 +88,10 @@ func (e *Exercise2) Solution1(ch chan string) {
 		}
 	}
 
-	ch <- strconv.Itoa(validCount)
-	close(ch)
+	return New(strconv.Itoa(validCount)), nil
 }
 
-func (e *Exercise2) Solution2(ch chan string) {
+func (e *Exercise2) Solution2() (Solution, error) {
 	validCount := 0
 
 	for _, password := range e.input {
@@ -101,6 +100,5 @@ func (e *Exercise2) Solution2(ch chan string) {
 		}
 	}
 
-	ch <- strconv.Itoa(validCount)
-	close(ch)
+	return New(strconv.Itoa(validCount)), nil
 }

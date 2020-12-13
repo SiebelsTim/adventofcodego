@@ -42,24 +42,50 @@ func main() {
 
 	startTime := time.Now()
 	exercise := exercises[exerciseNumber]
-	if exercise.ReadInput() != nil {
+	if exercise.Prepare() != nil {
 		color.Red("ERROR: %s\n", err)
 	} else {
+		fmt.Printf("Preparing took %s\n\n", boldGreen.Sprint(time.Since(startTime)))
 		chSol1 := make(chan string)
+		chTime1 := make(chan time.Duration)
 		chSol2 := make(chan string)
-		go exercise.Solution1(chSol1)
-		go exercise.Solution2(chSol2)
+		chTime2 := make(chan time.Duration)
+		go func() {
+			startTime := time.Now()
+			solution, err := exercise.Solution1()
+
+			if err != nil {
+				close(chSol1)
+			} else {
+				chSol1 <- solution.String()
+			}
+			chTime1 <- time.Since(startTime)
+		}()
+
+		go func() {
+			startTime := time.Now()
+			solution, err := exercise.Solution2()
+
+			if err != nil {
+				close(chSol2)
+			} else {
+				chSol2 <- solution.String()
+			}
+			chTime2 <- time.Since(startTime)
+		}()
 
 		if sol1 := <-chSol1; sol1 == "" {
 			color.Red("ERROR\n")
 		} else {
 			fmt.Printf("Solution1: %s\n", boldGreen.Sprint(sol1))
+			fmt.Printf("%s %s\n\n", green.Sprint("Took"), boldGreen.Sprint(<-chTime1))
 		}
 
 		if sol2 := <-chSol2; sol2 == "" {
 			color.Red("ERROR\n")
 		} else {
 			fmt.Printf("Solution2: %s\n", boldGreen.Sprint(sol2))
+			fmt.Printf("%s %s\n\n", green.Sprint("Took"), boldGreen.Sprint(<-chTime2))
 		}
 	}
 	endTime := time.Since(startTime) // nanoseconds
