@@ -1,8 +1,8 @@
 package exercise1
 
 import (
+	. "adventofcode/utils"
 	"errors"
-	. "exercise1/utils"
 	"strconv"
 )
 

@@ -1,4 +1,4 @@
-module exercise1
+module adventofcode
 
 go 1.15
 

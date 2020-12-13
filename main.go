@@ -1,9 +1,9 @@
 package main
 
 import (
-	"exercise1/exercise1"
-	"exercise1/exercise2"
-	. "exercise1/utils"
+	"adventofcode/exercise1"
+	"adventofcode/exercise2"
+	. "adventofcode/utils"
 	"fmt"
 	"github.com/fatih/color"
 	"os"

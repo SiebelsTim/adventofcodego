@@ -1,7 +1,7 @@
 package exercise2
 
 import (
-	. "exercise1/utils"
+	. "adventofcode/utils"
 	"strconv"
 	"strings"
 )
@@ -35,43 +35,43 @@ func (p Password) isValid() bool {
 	return count >= p.Policy.min && count <= p.Policy.max
 }
 
-func boolToInt(b bool) int {
-	if b {
-		return 1
-	} else {
-		return 0
-	}
-}
-
 
 func (p Password) isValid2() bool {
 	password := p.Password
 	firstPosition := p.Policy.min
 	lastPosition := p.Policy.max
 
-	return boolToInt(password[firstPosition-1] == p.Policy.letter) + boolToInt(password[lastPosition-1] == p.Policy.letter) == 1
+	return BoolToInt(password[firstPosition-1] == p.Policy.letter) + BoolToInt(password[lastPosition-1] == p.Policy.letter) == 1
 }
 
 func (e *Exercise2) Prepare() error {
 	lines := ReadInput(2)
 
-	var ret []Password
+	rows := make(chan Password)
 
 	for _, line := range lines {
-		parts := strings.Split(line, ": ")
-		rule := parts[0]
-		password := parts[1]
+		line := line
+		go func() {
+			parts := strings.Split(line, ": ")
+			rule := parts[0]
+			password := parts[1]
 
-		parts = strings.Split(rule, " ")
-		rng := parts[0]
-		letter := parts[1][0]
-		parts = strings.Split(rng, "-")
-		min, _ := strconv.Atoi(parts[0])
-		max, _ := strconv.Atoi(parts[1])
+			parts = strings.Split(rule, " ")
+			rng := parts[0]
+			letter := parts[1][0]
+			parts = strings.Split(rng, "-")
+			min, _ := strconv.Atoi(parts[0])
+			max, _ := strconv.Atoi(parts[1])
 
-		policy := Policy{ letter, min, max }
+			policy := Policy{letter, min, max}
 
-		ret = append(ret, Password{ policy, password})
+			rows <- Password{policy, password}
+		}()
+	}
+
+	var ret []Password
+	for i:=0; i < len(lines); i++ {
+		ret = append(ret, <-rows)
 	}
 
 	e.input = ret
