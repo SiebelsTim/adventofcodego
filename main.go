@@ -2,6 +2,7 @@ package main
 
 import (
 	"exercise1/exercise1"
+	"exercise1/exercise2"
 	. "exercise1/utils"
 	"fmt"
 	"github.com/fatih/color"
@@ -13,9 +14,15 @@ import (
 
 var exercises = []Exercise{
 	&exercise1.Exercise1{},
+	&exercise2.Exercise2{},
 }
 
 func main() {
+	if len(os.Args) < 2 {
+		color.Red("Must give an exericse number as first argument.")
+		os.Exit(1)
+	}
+
 	exerciseNumber, err := strconv.Atoi(os.Args[1])
 	exerciseNumber -= 1
 	if err != nil {
