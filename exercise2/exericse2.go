@@ -49,8 +49,9 @@ func (e *Exercise2) Prepare() error {
 	lines := ReadInput(2)
 
 	rows := make(chan Password)
+	linecount := 0
 
-	for _, line := range lines {
+	for line := range lines {
 		line := line
 		go func() {
 			parts := strings.Split(line, ": ")
@@ -68,10 +69,11 @@ func (e *Exercise2) Prepare() error {
 
 			rows <- Password{policy, password}
 		}()
+		linecount++
 	}
 
 	var ret []Password
-	for i:=0; i < len(lines); i++ {
+	for i:=0; i < linecount; i++ {
 		ret = append(ret, <-rows)
 	}
 

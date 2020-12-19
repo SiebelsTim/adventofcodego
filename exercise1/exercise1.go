@@ -12,7 +12,7 @@ type Exercise1 struct {
 }
 
 func (e *Exercise1) Prepare() error {
-	input := ReadInput(1)
+	input := ReadInputArray(1)
 	numbers := make([]int, len(input))
 	for i, line := range input {
 		number, err := strconv.Atoi(line)
