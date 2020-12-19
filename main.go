@@ -1,9 +1,10 @@
 package main
 
 import (
+	"adventofcode/common/format"
+	"adventofcode/common/solution"
 	"adventofcode/exercise1"
 	"adventofcode/exercise2"
-	. "adventofcode/utils"
 	"fmt"
 	"github.com/fatih/color"
 	"os"
@@ -12,7 +13,7 @@ import (
 	"time"
 )
 
-var exercises = []Exercise{
+var exercises = []solution.Exercise{
 	&exercise1.Exercise1{},
 	&exercise2.Exercise2{},
 }
@@ -95,13 +96,14 @@ func main() {
 
 	fmt.Printf("%s %s\n", green.Sprint("Took"), boldGreen.Sprint(endTime))
 
-	memory := getUsedMemory()
-	fmt.Printf("%s %s\n", green.Sprint("RAM:"), boldGreen.Sprintf("%d KB", memory.TotalAlloc/1000))
-}
-
-func getUsedMemory() runtime.MemStats {
-	var memstats runtime.MemStats
-	runtime.ReadMemStats(&memstats)
-
-	return memstats
+	memory, m := format.GetUsedMemory()
+	fmt.Printf("%s %s\n", green.Sprint("RAM:"), boldGreen.Sprintf("%s", m.String()))
+	fmt.Printf("%s %s\n", green.Sprint("Total Number of GCs:"), boldGreen.Sprintf("%d", memory.NumGC))
+	fmt.Printf("%s %s\n", green.Sprint("Total Time stopped:"), boldGreen.Sprintf("%d ns", memory.PauseTotalNs))
+	color.Blue("Forcing GC...")
+	runtime.GC()
+	memory, m = format.GetUsedMemory()
+	fmt.Printf("%s %s\n", green.Sprint("RAM:"), boldGreen.Sprintf("%s", m.String()))
+	fmt.Printf("%s %s\n", green.Sprint("Total Number of GCs:"), boldGreen.Sprintf("%d", memory.NumGC))
+	fmt.Printf("%s %s\n", green.Sprint("Total Time stopped:"), boldGreen.Sprintf("%d ns", memory.PauseTotalNs))
 }

@@ -1,7 +1,8 @@
 package exercise2
 
 import (
-	. "adventofcode/utils"
+	"adventofcode/common/solution"
+	. "adventofcode/common/utils"
 	"strconv"
 	"strings"
 )
@@ -79,7 +80,7 @@ func (e *Exercise2) Prepare() error {
 	return nil
 }
 
-func (e *Exercise2) Solution1() (Solution, error) {
+func (e *Exercise2) Solution1() (solution.Solution, error) {
 	validCount := 0
 
 	for _, password := range e.input {
@@ -88,10 +89,10 @@ func (e *Exercise2) Solution1() (Solution, error) {
 		}
 	}
 
-	return New(strconv.Itoa(validCount)), nil
+	return solution.New(strconv.Itoa(validCount)), nil
 }
 
-func (e *Exercise2) Solution2() (Solution, error) {
+func (e *Exercise2) Solution2() (solution.Solution, error) {
 	validCount := 0
 
 	for _, password := range e.input {
@@ -100,5 +101,5 @@ func (e *Exercise2) Solution2() (Solution, error) {
 		}
 	}
 
-	return New(strconv.Itoa(validCount)), nil
+	return solution.New(strconv.Itoa(validCount)), nil
 }

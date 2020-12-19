@@ -1,7 +1,8 @@
 package exercise1
 
 import (
-	. "adventofcode/utils"
+	"adventofcode/common/solution"
+	. "adventofcode/common/utils"
 	"errors"
 	"strconv"
 )
@@ -26,12 +27,12 @@ func (e *Exercise1) Prepare() error {
 	return nil
 }
 
-func (e *Exercise1) Solution1() (Solution, error) {
+func (e *Exercise1) Solution1() (solution.Solution, error) {
 	numbers := e.input
 	for i := 0; i < len(numbers); i++ {
 		for j := 0; j < len(numbers); j++ {
 			if i != j && numbers[i]+numbers[j] == 2020 {
-				return New(strconv.Itoa(numbers[i] * numbers[j])), nil
+				return solution.New(strconv.Itoa(numbers[i] * numbers[j])), nil
 			}
 		}
 	}
@@ -39,13 +40,13 @@ func (e *Exercise1) Solution1() (Solution, error) {
 	return nil, errors.New("no solution found")
 }
 
-func (e *Exercise1) Solution2() (Solution, error) {
+func (e *Exercise1) Solution2() (solution.Solution, error) {
 	numbers := e.input
 	for i := 0; i < len(numbers); i++ {
 		for j := 0; j < len(numbers); j++ {
 			for k := 0; k < len(numbers); k++ {
 				if i != j && j != k && k != i && numbers[i]+numbers[j]+numbers[k] == 2020 {
-					return New(strconv.Itoa(numbers[i] * numbers[j] * numbers[k])), nil
+					return solution.New(strconv.Itoa(numbers[i] * numbers[j] * numbers[k])), nil
 				}
 			}
 		}

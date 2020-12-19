@@ -1,4 +1,4 @@
-package utils
+package solution
 
 type Solution interface {
 	String() string
@@ -19,7 +19,7 @@ func (s stringSolution) String() string {
 }
 
 func New(solution string) Solution {
-	return stringSolution {
+	return stringSolution{
 		solution,
 	}
 }
