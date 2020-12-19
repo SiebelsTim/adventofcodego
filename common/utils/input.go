@@ -47,7 +47,7 @@ func readInput(n int, test bool) <-chan string {
 func readFileLines(path string) <-chan string {
 	fp, err := os.Open(path)
 	if err != nil {
-		panic("Cannot open file")
+		panic("Cannot open file: " + err.Error())
 	}
 
 	ch := make(chan string)
