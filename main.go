@@ -6,6 +6,7 @@ import (
 	"adventofcode/exercise1"
 	"adventofcode/exercise2"
 	"adventofcode/exercise3"
+	"adventofcode/exercise4"
 	"fmt"
 	"github.com/fatih/color"
 	"os"
@@ -18,6 +19,7 @@ var exercises = []solution.Exercise{
 	&exercise1.Exercise1{},
 	&exercise2.Exercise2{},
 	&exercise3.Exercise3{},
+	&exercise4.Exercise4{},
 }
 
 func main() {
@@ -49,9 +51,9 @@ func main() {
 		color.Red("ERROR: %s\n", err)
 	} else {
 		fmt.Printf("Preparing took %s\n\n", boldGreen.Sprint(time.Since(startTime)))
-		chSol1 := make(chan string)
+		chSol1 := make(chan string, 1)
 		chTime1 := make(chan time.Duration)
-		chSol2 := make(chan string)
+		chSol2 := make(chan string, 1)
 		chTime2 := make(chan time.Duration)
 		go func() {
 			startTime := time.Now()
