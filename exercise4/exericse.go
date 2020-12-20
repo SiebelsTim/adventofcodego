@@ -11,7 +11,7 @@ import (
 )
 
 type Exercise4 struct {
-	input []Passport
+	input []*Passport
 }
 
 type Passport struct {
@@ -39,7 +39,6 @@ var neededAttributes = []string{
 	//"cid", not needed
 }
 
-
 var hairColorRegex, regexErr = regexp.Compile("^#[0-9a-f]{6}$")
 
 func (p *Passport) isPresent() bool {
@@ -62,16 +61,18 @@ func isBetween(str string, min int, max int) bool {
 	return year >= min && year <= max
 }
 
+// returns height, unit
 func parseHeight(str string) (string, string) {
-	return str[:len(str) - 2], str[len(str) - 2:]
+	// 180cm, 52in.
+	return str[:len(str)-2], str[len(str)-2:]
 }
 
 func (p *Passport) isValid() bool {
 	c := p.contents
 
 	if !isBetween(c["byr"], 1920, 2002) ||
-	   !isBetween(c["iyr"], 2010, 2020) ||
-	   !isBetween(c["eyr"], 2020, 2030) {
+		!isBetween(c["iyr"], 2010, 2020) ||
+		!isBetween(c["eyr"], 2020, 2030) {
 		return false
 	}
 
@@ -92,7 +93,7 @@ func (p *Passport) isValid() bool {
 		return false
 	}
 
-	validEyeColors := map[string]bool {
+	validEyeColors := map[string]bool{
 		"amb": true,
 		"blu": true,
 		"brn": true,
@@ -123,6 +124,20 @@ func (p *Passport) String() string {
 	return ret.String()
 }
 
+func parsePassport(str string) *Passport {
+	contents := make(map[string]string)
+	parts := strings.Split(str, " ")
+	for _, part := range parts {
+		keyAndValue := strings.Split(part, ":")
+		if len(keyAndValue) != 2 {
+			panic("Could not parse input line: " + str)
+		}
+		contents[keyAndValue[0]] = keyAndValue[1]
+	}
+
+	return &Passport{contents: contents}
+}
+
 func (e *Exercise4) Prepare() error {
 	if regexErr != nil {
 		return errors.New("could not compile regex")
@@ -130,25 +145,39 @@ func (e *Exercise4) Prepare() error {
 
 	input := utils.ReadInput(4)
 
-	contents := make(map[string]string)
+	inputCh := make(chan string, 64)
+	passportCh := make(chan *Passport, 64)
+	passportString := ""
 
+	// read passport strings and convert to Passport objects
+	go func() {
+		for line := range inputCh {
+			line := line
+			go func() {
+				passportCh <- parsePassport(line)
+			}()
+		}
+	}()
+
+	// Find passport strings, separated by two newlines
+	count := 0
 	for line := range input {
 		if line == "" {
-			e.input = append(e.input, Passport{contents: contents})
-			contents = make(map[string]string)
+			inputCh <- passportString[0 : len(passportString)-1]
+			passportString = ""
+			count++
 		} else {
-			parts := strings.Split(line, " ")
-			for _, part := range parts {
-				keyAndValue := strings.Split(part, ":")
-				if len(keyAndValue) != 2 {
-					return errors.New("Could not parse input line: " + line)
-				}
-				contents[keyAndValue[0]] = keyAndValue[1]
-			}
+			passportString += line + " "
 		}
 	}
+	// last one
+	inputCh <- passportString[0: len(passportString) - 1]
+	count++
+	close(inputCh)
 
-	e.input = append(e.input, Passport{contents: contents})
+	for i := 0; i < count; i++ {
+		e.input = append(e.input, <-passportCh)
+	}
 
 	return nil
 }
@@ -160,7 +189,7 @@ func (e *Exercise4) Solution1() (solution.Solution, error) {
 			validPassports++
 		}
 	}
-	
+
 	return solution.New(strconv.Itoa(validPassports)), nil
 }
 
