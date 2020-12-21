@@ -11,8 +11,8 @@ type Exercise1 struct {
 	input []int
 }
 
-func (e *Exercise1) Prepare() error {
-	input := ReadInputArray(1)
+func (e *Exercise1) Prepare(isTest bool) error {
+	input := ReadInputArray(1, isTest)
 	numbers := make([]int, len(input))
 	for i, line := range input {
 		number, err := strconv.Atoi(line)

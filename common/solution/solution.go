@@ -5,7 +5,7 @@ type Solution interface {
 }
 
 type Exercise interface {
-	Prepare() error
+	Prepare(isTest bool) error
 	Solution1() (Solution, error)
 	Solution2() (Solution, error)
 }

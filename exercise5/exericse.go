@@ -80,8 +80,8 @@ func (p Pass) String() string {
 	return ret.String()
 }
 
-func (e *Exericse5) Prepare() error {
-	input := utils.ReadInput(5)
+func (e *Exericse5) Prepare(isTest bool) error {
+	input := utils.ReadInput(5, isTest)
 
 	for line := range input {
 		e.input = append(e.input, parsePass(line))

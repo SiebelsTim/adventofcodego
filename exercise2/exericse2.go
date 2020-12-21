@@ -45,8 +45,8 @@ func (p Password) isValid2() bool {
 	return BoolToInt(password[firstPosition-1] == p.Policy.letter) + BoolToInt(password[lastPosition-1] == p.Policy.letter) == 1
 }
 
-func (e *Exercise2) Prepare() error {
-	lines := ReadInput(2)
+func (e *Exercise2) Prepare(isTest bool) error {
+	lines := ReadInput(2, isTest)
 
 	rows := make(chan Password)
 	linecount := 0

@@ -6,21 +6,20 @@ import (
 	"os"
 )
 
-func ReadInput(n int) <-chan string {
-	return readInput(n, false)
+
+func ReadInput(n int, test bool) <-chan string {
+	suffix := ""
+	if test {
+		suffix = "test"
+	}
+
+	filename := fmt.Sprintf("exercise%d/%sinput.txt", n, suffix)
+
+	return readFileLines(filename)
 }
 
-
-func ReadInputTest(n int) <-chan string {
-	return readInput(n, true)
-}
-
-func ReadInputArray(n int) []string {
-	return chanToArray(readInput(n, false))
-}
-
-func ReadInputTestArray(n int) []string {
-	return chanToArray(readInput(n, true))
+func ReadInputArray(n int, isTest bool) []string {
+	return chanToArray(ReadInput(n, isTest))
 }
 
 func chanToArray(ch <-chan string) []string {
@@ -31,17 +30,6 @@ func chanToArray(ch <-chan string) []string {
 	}
 
 	return ret
-}
-
-func readInput(n int, test bool) <-chan string {
-	suffix := ""
-	if test {
-		suffix = "test"
-	}
-
-	filename := fmt.Sprintf("exercise%d/%sinput.txt", n, suffix)
-
-	return readFileLines(filename)
 }
 
 func readFileLines(path string) <-chan string {

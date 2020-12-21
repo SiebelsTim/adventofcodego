@@ -138,12 +138,12 @@ func parsePassport(str string) *Passport {
 	return &Passport{contents: contents}
 }
 
-func (e *Exercise4) Prepare() error {
+func (e *Exercise4) Prepare(isTest bool) error {
 	if regexErr != nil {
 		return errors.New("could not compile regex")
 	}
 
-	input := utils.ReadInput(4)
+	input := utils.ReadInput(4, isTest)
 
 	inputCh := make(chan string, 64)
 	passportCh := make(chan *Passport, 64)

@@ -36,10 +36,10 @@ func (e *Exercise3) String() string {
 	return ret.String()
 }
 
-func (e *Exercise3) Prepare() error {
+func (e *Exercise3) Prepare(isTest bool) error {
 	var input [][]byte
 	i := 0
-	for line := range utils.ReadInput(3) {
+	for line := range utils.ReadInput(3, isTest) {
 		input = append(input, make([]byte, len(line)))
 		input[i] = []byte(line)
 		i++
