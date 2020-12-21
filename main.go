@@ -7,6 +7,7 @@ import (
 	"adventofcode/exercise2"
 	"adventofcode/exercise3"
 	"adventofcode/exercise4"
+	"adventofcode/exercise5"
 	"fmt"
 	"github.com/fatih/color"
 	"os"
@@ -20,6 +21,7 @@ var exercises = []solution.Exercise{
 	&exercise2.Exercise2{},
 	&exercise3.Exercise3{},
 	&exercise4.Exercise4{},
+	&exercise5.Exericse5{},
 }
 
 func main() {
