@@ -12,8 +12,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/fatih/color"
+	"log"
 	"os"
 	"runtime"
+	"runtime/pprof"
 	"strconv"
 	"time"
 )
@@ -34,7 +36,22 @@ var boldGreen = color.New(color.FgGreen).Add(color.Bold)
 func main() {
 	isTest := flag.Bool("test", false, "Specify -test to run with test data")
 	isAll := flag.Bool("all", false, "Use to run all exercise afert each other")
+	cpuprofile := flag.String("cpuprofile", "", "write cpu profile to `file`")
+	memprofile := flag.String("memprofile", "", "write memory profile to `file`")
 	flag.Parse()
+
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal("could not create CPU profile: ", err)
+		}
+		defer f.Close() // error handling omitted for example
+		if err := pprof.StartCPUProfile(f); err != nil {
+			log.Fatal("could not start CPU profile: ", err)
+		}
+		defer pprof.StopCPUProfile()
+	}
+
 
 	if *isTest {
 		color.Yellow("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -54,7 +71,25 @@ func main() {
 			os.Exit(1)
 		}
 
-		runProgram(exerciseNumber, isTest)
+		count := 1
+		if *cpuprofile != "" {
+			count = 2000
+		}
+		for i:=0; i < count; i++ {
+			runProgram(exerciseNumber, isTest)
+		}
+	}
+
+	if *memprofile != "" {
+		f, err := os.Create(*memprofile)
+		if err != nil {
+			log.Fatal("could not create memory profile: ", err)
+		}
+		defer f.Close() // error handling omitted for example
+		runtime.GC() // get up-to-date statistics
+		if err := pprof.WriteHeapProfile(f); err != nil {
+			log.Fatal("could not write memory profile: ", err)
+		}
 	}
 }
 
@@ -78,12 +113,8 @@ func runProgram(exerciseNumber int, isTest *bool) {
 	fmt.Printf("%s %s\n", green.Sprint("RAM:"), boldGreen.Sprintf("%s", m.String()))
 	fmt.Printf("%s %s\n", green.Sprint("Total Number of GCs:"), boldGreen.Sprintf("%d", memory.NumGC))
 	fmt.Printf("%s %s\n", green.Sprint("Total Time stopped:"), boldGreen.Sprintf("%d ns", memory.PauseTotalNs))
-	color.Blue("Forcing GC...")
-	runtime.GC()
-	memory, m = format.GetUsedMemory()
-	fmt.Printf("%s %s\n", green.Sprint("RAM:"), boldGreen.Sprintf("%s", m.String()))
-	fmt.Printf("%s %s\n", green.Sprint("Total Number of GCs:"), boldGreen.Sprintf("%d", memory.NumGC))
 	fmt.Printf("%s %s\n", green.Sprint("Total Time stopped:"), boldGreen.Sprintf("%d ns", memory.PauseTotalNs))
+	fmt.Printf("Goroutine count: %s\n", boldGreen.Sprintf("%d", runtime.NumGoroutine()))
 }
 
 func runExercise(n int, isTest bool) time.Duration {
