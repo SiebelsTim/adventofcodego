@@ -8,6 +8,7 @@ import (
 	"adventofcode/exercise3"
 	"adventofcode/exercise4"
 	"adventofcode/exercise5"
+	"adventofcode/exercise6"
 	"flag"
 	"fmt"
 	"github.com/fatih/color"
@@ -23,6 +24,7 @@ var exercises = []solution.Exercise{
 	&exercise3.Exercise3{},
 	&exercise4.Exercise4{},
 	&exercise5.Exericse5{},
+	&exercise6.Exericse6{},
 }
 
 
