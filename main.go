@@ -9,6 +9,7 @@ import (
 	"adventofcode/exercise4"
 	"adventofcode/exercise5"
 	"adventofcode/exercise6"
+	"adventofcode/exercise7"
 	"flag"
 	"fmt"
 	"github.com/fatih/color"
@@ -27,6 +28,7 @@ var exercises = []solution.Exercise{
 	&exercise4.Exercise4{},
 	&exercise5.Exericse5{},
 	&exercise6.Exericse6{},
+	&exercise7.Exericse7{},
 }
 
 
@@ -95,7 +97,7 @@ func main() {
 
 func runProgram(exerciseNumber int, isTest *bool) {
 	if len(exercises) <= exerciseNumber || exerciseNumber < 0 {
-		color.Red("Could not find exercise%d.", exerciseNumber)
+		color.Red("Could not find exercise%d.", exerciseNumber+1)
 		os.Exit(1)
 	}
 
