@@ -3,6 +3,7 @@ package exercise7
 import (
 	"adventofcode/common/solution"
 	"adventofcode/common/utils"
+	"runtime"
 	"strconv"
 )
 
@@ -11,15 +12,28 @@ type Exericse7 struct {
 }
 
 func (e *Exericse7) Prepare(isTest bool) error {
-	input := utils.ReadInput(7, isTest)
+	input := utils.ReadInputArray(7, isTest)
+
+	ch := make(chan rule, len(input))
+
+	for i := 0; i < runtime.NumCPU(); i++ {
+		start := int(float64(len(input)) * (float64(i) / float64(runtime.NumCPU())))
+		end := int(float64(len(input))*(float64(i+1)/float64(runtime.NumCPU()))) - 1
+
+		go func() {
+			for _, line := range input[start : end+1] {
+				rule, err := parseRule(line)
+				if err != nil {
+					panic(err)
+				}
+				ch <- rule
+			}
+		}()
+	}
 
 	var rules = make(map[string]rule)
-
-	for line := range input {
-		rule, err := parseRule(line)
-		if err != nil {
-			return err
-		}
+	for i := 0; i < len(input); i++ {
+		rule := <-ch
 		rules[rule.outerBag.String()] = rule
 	}
 
@@ -67,7 +81,7 @@ func (e *Exericse7) Solution2() (solution.Solution, error) {
 		top := queue[0]
 		ret += top.count
 		bags := e.input[top.String()].containedBags
-		for i:=0; i < top.count; i++ {
+		for i := 0; i < top.count; i++ {
 			queue = append(queue, bags...)
 		}
 

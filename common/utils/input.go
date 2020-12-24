@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
+var basepath = getBasePath()
 
 func ReadInput(n int, test bool) <-chan string {
 	suffix := ""
@@ -13,7 +15,7 @@ func ReadInput(n int, test bool) <-chan string {
 		suffix = "test"
 	}
 
-	filename := fmt.Sprintf("exercise%d/%sinput.txt", n, suffix)
+	filename := fmt.Sprintf("%s/exercise%d/%sinput.txt", basepath, n, suffix)
 
 	return readFileLines(filename)
 }
@@ -42,7 +44,7 @@ func readFileLines(path string) <-chan string {
 	scanner := bufio.NewScanner(fp)
 	scanner.Split(bufio.ScanLines)
 
-	go func () {
+	go func() {
 		defer fp.Close()
 		defer close(ch)
 		for scanner.Scan() {
@@ -51,4 +53,12 @@ func readFileLines(path string) <-chan string {
 	}()
 
 	return ch
+}
+
+func getBasePath() string {
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	return cwd[:strings.Index(cwd, "adventofcodego")+len("adventofcodego")]
 }
