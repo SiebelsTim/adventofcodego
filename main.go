@@ -13,10 +13,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/fatih/color"
-	"log"
+	"github.com/pkg/profile"
 	"os"
 	"runtime"
-	"runtime/pprof"
 	"strconv"
 	"time"
 )
@@ -31,29 +30,33 @@ var exercises = []solution.Exercise{
 	&exercise7.Exericse7{},
 }
 
-
 var green = color.New(color.FgGreen)
 var boldGreen = color.New(color.FgGreen).Add(color.Bold)
 
 func main() {
 	isTest := flag.Bool("test", false, "Specify -test to run with test data")
 	isAll := flag.Bool("all", false, "Use to run all exercise afert each other")
-	cpuprofile := flag.String("cpuprofile", "", "write cpu profile to `file`")
-	memprofile := flag.String("memprofile", "", "write memory profile to `file`")
+	count := flag.Int("count", 1, "Specify how often to run the solution")
+	cpuprofile := flag.Bool("cpuprofile", false, "write cpu profile")
+	memprofile := flag.Bool("memprofile", false, "write memory profile")
+	traceprofile := flag.Bool("trace", false, "write trace profile")
 	flag.Parse()
 
-	if *cpuprofile != "" {
-		f, err := os.Create(*cpuprofile)
-		if err != nil {
-			log.Fatal("could not create CPU profile: ", err)
+	if *cpuprofile || *memprofile || *traceprofile {
+		options := []func(*profile.Profile){
+			profile.ProfilePath("."),
 		}
-		defer f.Close() // error handling omitted for example
-		if err := pprof.StartCPUProfile(f); err != nil {
-			log.Fatal("could not start CPU profile: ", err)
+		if *cpuprofile {
+			options = append(options, profile.CPUProfile)
 		}
-		defer pprof.StopCPUProfile()
+		if *memprofile {
+			options = append(options, profile.MemProfile)
+		}
+		if *traceprofile {
+			options = append(options, profile.TraceProfile)
+		}
+		defer profile.Start(options...).Stop()
 	}
-
 
 	if *isTest {
 		color.Yellow("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -73,24 +76,8 @@ func main() {
 			os.Exit(1)
 		}
 
-		count := 1
-		if *cpuprofile != "" {
-			count = 2000
-		}
-		for i:=0; i < count; i++ {
+		for i := 0; i < *count; i++ {
 			runProgram(exerciseNumber, isTest)
-		}
-	}
-
-	if *memprofile != "" {
-		f, err := os.Create(*memprofile)
-		if err != nil {
-			log.Fatal("could not create memory profile: ", err)
-		}
-		defer f.Close() // error handling omitted for example
-		runtime.GC() // get up-to-date statistics
-		if err := pprof.WriteHeapProfile(f); err != nil {
-			log.Fatal("could not write memory profile: ", err)
 		}
 	}
 }
