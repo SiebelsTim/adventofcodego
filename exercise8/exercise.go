@@ -3,7 +3,7 @@ package exercise8
 import (
 	"adventofcode/common/solution"
 	"adventofcode/common/utils"
-	"errors"
+	"runtime"
 	"strconv"
 )
 
@@ -61,23 +61,30 @@ func generateModifiedPrograms(originalProgram Program, newPrograms chan<- Progra
 	close(newPrograms)
 }
 
-func (e *Exericse8) Solution2() (solution.Solution, error) {
-	newPrograms := make(chan Program)
-	go generateModifiedPrograms(e.input, newPrograms)
-
-	var vm VM
-	for program := range newPrograms {
-		vm = stops(program)
-		if vm.Stopped() {
-			break
+func worker(newPrograms <-chan Program, keepRunning *bool, result chan<- int) {
+	for *keepRunning {
+		program := <-newPrograms
+		if vm := stops(program); vm.Stopped() {
+			*keepRunning = false
+			result <- vm.Accumulator()
+			return
 		}
 	}
+}
 
-	if vm == nil {
-		return nil, errors.New("no VM found")
+func (e *Exericse8) Solution2() (solution.Solution, error) {
+	newPrograms := make(chan Program, 128)
+	go generateModifiedPrograms(e.input, newPrograms) // this probably leaks, but whatever
+
+	result := make(chan int)
+	keepRunning := true // Don't need locking, as it only turns from true to false once
+
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go worker(newPrograms, &keepRunning, result)
 	}
 
-	return solution.New(strconv.Itoa(vm.Accumulator())), nil
+	// We assume that we always get a result. Otherwise we wait here forever
+	return solution.New(strconv.Itoa(<-result)), nil
 }
 
 // returns the VM after the program ran
@@ -102,12 +109,12 @@ func stops(program Program) VM {
 
 // swaps a single instruction from "take" to "replace" and returns the new program, and the index that changed
 func swapJmp(program Program, entry int, take int, replace int) (Program, int) {
+	if entry >= len(program) {
+		return program, -1
+	}
+
 	newProg := append([]Instruction{}, program...) // copy
 	var modifiedEntry = -1
-
-	if entry >= len(newProg) {
-		return newProg, modifiedEntry
-	}
 
 	for idx, instruction := range newProg[entry:] {
 		if instruction.Kind() == take {
