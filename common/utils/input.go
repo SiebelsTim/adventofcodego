@@ -40,7 +40,7 @@ func readFileLines(path string) <-chan string {
 		panic("Cannot open file: " + err.Error())
 	}
 
-	ch := make(chan string)
+	ch := make(chan string, 64)
 	scanner := bufio.NewScanner(fp)
 	scanner.Split(bufio.ScanLines)
 
