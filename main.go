@@ -10,6 +10,7 @@ import (
 	"adventofcode/exercise5"
 	"adventofcode/exercise6"
 	"adventofcode/exercise7"
+	"adventofcode/exercise8"
 	"flag"
 	"fmt"
 	"github.com/fatih/color"
@@ -28,6 +29,7 @@ var exercises = []solution.Exercise{
 	&exercise5.Exericse5{},
 	&exercise6.Exericse6{},
 	&exercise7.Exericse7{},
+	&exercise8.Exericse8{},
 }
 
 var green = color.New(color.FgGreen)
