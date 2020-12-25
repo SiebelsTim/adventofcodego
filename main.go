@@ -11,6 +11,7 @@ import (
 	"adventofcode/exercise6"
 	"adventofcode/exercise7"
 	"adventofcode/exercise8"
+	"adventofcode/exercise9"
 	"flag"
 	"fmt"
 	"github.com/fatih/color"
@@ -30,6 +31,7 @@ var exercises = []solution.Exercise{
 	&exercise6.Exericse6{},
 	&exercise7.Exericse7{},
 	&exercise8.Exericse8{},
+	&exercise9.Exericse9{},
 }
 
 var green = color.New(color.FgGreen)
@@ -126,6 +128,7 @@ func runExercise(n int, isTest bool) time.Duration {
 
 			if err != nil {
 				color.Red("Error %s", err.Error())
+				close(chSol1)
 			} else {
 				chSol1 <- solution.String()
 			}
@@ -145,14 +148,14 @@ func runExercise(n int, isTest bool) time.Duration {
 			chTime2 <- time.Since(startTime)
 		}()
 
-		if sol1 := <-chSol1; sol1 == "" {
+		if sol1, ok := <-chSol1; !ok {
 			color.Red("ERROR\n")
 		} else {
 			fmt.Printf("Solution1: %s\n", boldGreen.Sprint(sol1))
 			fmt.Printf("%s %s\n\n", green.Sprint("Took"), boldGreen.Sprint(<-chTime1))
 		}
 
-		if sol2 := <-chSol2; sol2 == "" {
+		if sol2, ok := <-chSol2; !ok {
 			color.Red("ERROR\n")
 		} else {
 			fmt.Printf("Solution2: %s\n", boldGreen.Sprint(sol2))
